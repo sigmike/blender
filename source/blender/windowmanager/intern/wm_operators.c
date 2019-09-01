@@ -1961,6 +1961,15 @@ static void WM_OT_window_new_main(wmOperatorType *ot)
   ot->poll = wm_operator_winactive_normal;
 }
 
+static void WM_OT_window_new_vr(wmOperatorType *ot)
+{
+  ot->name = "New VR Window";
+  ot->idname = "WM_OT_window_new_vr";
+  ot->description = "Start a VR instance";
+
+  ot->exec = wm_window_new_vr_exec;
+}
+
 static void WM_OT_window_fullscreen_toggle(wmOperatorType *ot)
 {
   ot->name = "Toggle Window Fullscreen";
@@ -3514,6 +3523,7 @@ void wm_operatortypes_register(void)
   WM_operatortype_append(WM_OT_window_close);
   WM_operatortype_append(WM_OT_window_new);
   WM_operatortype_append(WM_OT_window_new_main);
+  WM_operatortype_append(WM_OT_window_new_vr);
   WM_operatortype_append(WM_OT_read_history);
   WM_operatortype_append(WM_OT_read_homefile);
   WM_operatortype_append(WM_OT_read_factory_settings);

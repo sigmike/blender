@@ -95,4 +95,10 @@ if(WITH_MOD_SMOKE)
   add_definitions(-DWITH_SMOKE)
 endif()
 
+if(WITH_VR)
+  list(APPEND LIB
+    bf_vr
+  )
+endif()
+
 blender_add_lib(bf_editor_space_view3d "${SRC}" "${INC}" "${INC_SYS}" "${LIB}")

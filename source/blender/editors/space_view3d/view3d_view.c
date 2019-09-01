@@ -66,6 +66,11 @@
 
 #include "view3d_intern.h" /* own include */
 
+#include "../vr/vr_build.h"
+#if WITH_VR
+#  include "../vr/vr_main.h"
+#endif
+
 /* -------------------------------------------------------------------- */
 /** \name Smooth View Operator & Utilities
  *
@@ -850,7 +855,16 @@ void view3d_viewmatrix_set(Depsgraph *depsgraph,
       use_lock_ofs = true;
     }
     else {
+#if WITH_VR
+      if (rv3d->rflag & RV3D_IS_VR) {
+        vr_compute_viewmat(v3d->multiview_eye, rv3d->viewmat);
+      }
+      else {
+        translate_m4(rv3d->viewmat, rv3d->ofs[0], rv3d->ofs[1], rv3d->ofs[2]);
+      }
+#else
       translate_m4(rv3d->viewmat, rv3d->ofs[0], rv3d->ofs[1], rv3d->ofs[2]);
+#endif
     }
 
     /* lock offset */

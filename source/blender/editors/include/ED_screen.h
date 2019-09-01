@@ -34,6 +34,13 @@
 
 #include "BLI_compiler_attrs.h"
 
+#include "../vr/vr_build.h"
+#if WITH_VR
+#  ifdef __cplusplus
+extern "C" {
+#  endif
+#endif
+
 struct ARegion;
 struct Depsgraph;
 struct IDProperty;
@@ -454,5 +461,11 @@ enum {
   SPACE_CONTEXT_CYCLE_PREV,
   SPACE_CONTEXT_CYCLE_NEXT,
 };
+
+#if WITH_VR
+#  ifdef __cplusplus
+}
+#  endif
+#endif
 
 #endif /* __ED_SCREEN_H__ */

@@ -265,6 +265,8 @@ option(WITH_SYSTEM_AUDASPACE "Build with external audaspace library installed on
 mark_as_advanced(WITH_AUDASPACE)
 mark_as_advanced(WITH_SYSTEM_AUDASPACE)
 
+option(WITH_VR "Build with VR support" ON)
+
 if(NOT WITH_AUDASPACE)
   set(WITH_SYSTEM_AUDASPACE OFF)
 endif()

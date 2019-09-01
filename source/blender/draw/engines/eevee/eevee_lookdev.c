@@ -41,6 +41,8 @@
 
 #include "draw_common.h"
 
+#include "../vr/vr_build.h"
+
 static void eevee_lookdev_lightcache_delete(EEVEE_Data *vedata)
 {
   EEVEE_StorageList *stl = vedata->stl;
@@ -167,6 +169,28 @@ void EEVEE_lookdev_cache_init(EEVEE_Data *vedata,
         tex = sl->equirect_radiance_gputexture;
       }
       DRW_shgroup_uniform_texture(*grp, "image", tex);
+
+#if WITH_VR
+      /* If VR, need to recalculate lightprobes for each eye. */
+      if (v3d->stereo3d_flag & V3D_S3D_DISPVR) {
+        static bool update_other = false;
+        if (update_other ||
+            (g_data->studiolight_index != sl->index ||
+             g_data->studiolight_rot_z != v3d->shading.studiolight_rot_z ||
+             g_data->studiolight_cubemap_res != scene->eevee.gi_cubemap_resolution ||
+             g_data->studiolight_glossy_clamp != scene->eevee.gi_glossy_clamp ||
+             g_data->studiolight_filter_quality != scene->eevee.gi_filter_quality)) {
+          stl->lookdev_lightcache->flag |= LIGHTCACHE_UPDATE_WORLD;
+          g_data->studiolight_index = sl->index;
+          g_data->studiolight_rot_z = v3d->shading.studiolight_rot_z;
+          g_data->studiolight_cubemap_res = scene->eevee.gi_cubemap_resolution;
+          g_data->studiolight_glossy_clamp = scene->eevee.gi_glossy_clamp;
+          g_data->studiolight_filter_quality = scene->eevee.gi_filter_quality;
+          update_other = !update_other;
+        }
+        return;
+      }
+#endif
 
       /* Do we need to recalc the lightprobes? */
       if (g_data->studiolight_index != sl->index ||

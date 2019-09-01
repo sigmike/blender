@@ -95,6 +95,11 @@
 #  include "BLI_threads.h"
 #endif
 
+#include "../vr/vr_build.h"
+#if WITH_VR
+#  include "../vr/vr_main.h"
+#endif
+
 /* the global to talk to ghost */
 static GHOST_SystemHandle g_system = NULL;
 
@@ -457,6 +462,13 @@ void wm_window_close(bContext *C, wmWindowManager *wm, wmWindow *win)
     BLI_assert(BKE_workspace_layout_screen_get(layout) == screen);
     BKE_workspace_layout_remove(bmain, workspace, layout);
   }
+
+#if WITH_VR
+  if (win == vr_get_obj()->window) {
+    vr_uninit();
+    vr_get_obj()->window = 0;
+  }
+#endif
 }
 
 void wm_window_title(wmWindowManager *wm, wmWindow *win)
@@ -962,6 +974,49 @@ int wm_window_new_main_exec(bContext *C, wmOperator *UNUSED(op))
   ok = (wm_window_copy_test(C, win_src, true, false) != NULL);
 
   return ok ? OPERATOR_FINISHED : OPERATOR_CANCELLED;
+}
+
+int wm_window_new_vr_exec(bContext *C, wmOperator *UNUSED(op))
+{
+#if WITH_VR
+  static Main *prev_main;
+  Main *curr_main = CTX_data_main(C);
+
+  if (vr_get_obj()->window && prev_main == curr_main) {
+    /* We only allow one VR window per scene, for now. */
+    return 1;
+  }
+  prev_main = curr_main;
+
+  VR *vr = vr_get_obj();
+  if (vr->initialized) {
+    vr_uninit();
+    vr->window = NULL;
+  }
+
+  wmWindow *win = CTX_wm_window(C);
+
+  /* Create separate window for VR. */
+  wmWindow *vr_win = wm_window_copy_test(C, win, true, false);
+  if (!vr_win) {
+    return 1;
+  }
+
+  /* Initialize basic VR operations. */
+  int error = vr_init(C);
+  if (!error) {
+    /* Now initialize VR UI operations. */
+    error = vr_init_ui();
+  }
+  if (error) {
+    wmWindowManager *wm = CTX_wm_manager(C);
+    wm_window_close(C, wm, vr_win);
+    return 1;
+  }
+  vr->window = vr_win;
+#endif
+
+  return 1;
 }
 
 /* fullscreen operator callback */
@@ -1608,6 +1663,12 @@ void wm_window_process_events(const bContext *C)
   hasevent |= wm_window_timer(C);
 
   /* no event, we sleep 5 milliseconds */
+#if WITH_VR
+  if (vr_get_obj()->window) {
+    /* Don't sleep here because it blocks rendering for VR. */
+    return;
+  }
+#endif
   if (hasevent == 0) {
     PIL_sleep_ms(5);
   }

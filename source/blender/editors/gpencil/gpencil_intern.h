@@ -28,6 +28,13 @@
 
 #include "ED_numinput.h"
 
+#include "../vr/vr_build.h"
+#if WITH_VR
+#  ifdef __cplusplus
+extern "C" {
+#  endif
+#endif
+
 /* internal exports only */
 struct Material;
 struct bGPDspoint;
@@ -630,5 +637,11 @@ struct GP_EditableStrokes_Iter {
   (void)0
 
 /* ****************************************************** */
+
+#if WITH_VR
+#  ifdef __cplusplus
+}
+#  endif
+#endif
 
 #endif /* __GPENCIL_INTERN_H__ */

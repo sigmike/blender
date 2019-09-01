@@ -24,6 +24,12 @@
 #ifndef __BKE_EDITMESH_BVH_H__
 #define __BKE_EDITMESH_BVH_H__
 
+#if WITH_VR
+#  ifdef __cplusplus
+extern "C" {
+#  endif
+#endif
+
 struct BMBVHTree;
 struct BMEditMesh;
 struct BMFace;
@@ -96,5 +102,11 @@ enum {
   /** Omit hidden geometry. */
   BMBVH_RESPECT_HIDDEN = (1 << 2),
 };
+
+#if WITH_VR
+#  ifdef __cplusplus
+}
+#  endif
+#endif
 
 #endif /* __BKE_EDITMESH_BVH_H__ */

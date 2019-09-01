@@ -24,6 +24,13 @@
 #ifndef __ED_CURVE_H__
 #define __ED_CURVE_H__
 
+#include "../vr/vr_build.h"
+#if WITH_VR
+#  ifdef __cplusplus
+extern "C" {
+#  endif
+#endif
+
 struct BPoint;
 struct Base;
 struct BezTriple;
@@ -102,6 +109,12 @@ void ED_font_undosys_type(struct UndoType *ut);
 #if 0
 /* debug only */
 void printknots(struct Object *obedit);
+#endif
+
+#if WITH_VR
+#  ifdef __cplusplus
+}
+#  endif
 #endif
 
 #endif /* __ED_CURVE_H__ */

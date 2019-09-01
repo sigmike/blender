@@ -19,6 +19,13 @@
 #ifndef __BKE_MBALL_H__
 #define __BKE_MBALL_H__
 
+#include "../vr/vr_build.h"
+#if WITH_VR
+#  ifdef __cplusplus
+extern "C" {
+#  endif
+#endif
+
 /** \file
  * \ingroup bke
  */
@@ -91,5 +98,11 @@ void BKE_mball_batch_cache_free(struct MetaBall *mb);
 
 extern void (*BKE_mball_batch_cache_dirty_tag_cb)(struct MetaBall *mb, int mode);
 extern void (*BKE_mball_batch_cache_free_cb)(struct MetaBall *mb);
+
+#if WITH_VR
+#  ifdef __cplusplus
+}
+#  endif
+#endif
 
 #endif

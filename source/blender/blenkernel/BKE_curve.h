@@ -19,6 +19,13 @@
 #ifndef __BKE_CURVE_H__
 #define __BKE_CURVE_H__
 
+#include "../vr/vr_build.h"
+#if WITH_VR
+#  ifdef __cplusplus
+extern "C" {
+#  endif
+#endif
+
 /** \file
  * \ingroup bke
  */
@@ -273,5 +280,11 @@ void BKE_curve_decimate_nurb(struct Nurb *nu,
 
 extern void (*BKE_curve_batch_cache_dirty_tag_cb)(struct Curve *cu, int mode);
 extern void (*BKE_curve_batch_cache_free_cb)(struct Curve *cu);
+
+#if WITH_VR
+#  ifdef __cplusplus
+}
+#  endif
+#endif
 
 #endif /* __BKE_CURVE_H__ */

@@ -26,6 +26,8 @@
 
 #include "GPU_state.h"
 
+#include "../vr/vr_build.h"
+
 #ifdef __cplusplus
 extern "C" {
 #endif
@@ -39,7 +41,6 @@ struct PreviewImage;
 struct rcti;
 
 struct GPUFrameBuffer;
-typedef struct GPUTexture GPUTexture;
 
 /* GPU Texture
  * - always returns unsigned char RGBA textures
@@ -147,6 +148,47 @@ typedef enum eGPUDataFormat {
   GPU_DATA_UNSIGNED_INT_24_8,
   GPU_DATA_10_11_11_REV,
 } eGPUDataFormat;
+
+#if WITH_VR
+/* Maximum number of FBOs a texture can be attached to. */
+#  define GPU_TEX_MAX_FBO_ATTACHED 10
+
+typedef enum eGPUTextureFormatFlag {
+  GPU_FORMAT_DEPTH = (1 << 0),
+  GPU_FORMAT_STENCIL = (1 << 1),
+  GPU_FORMAT_INTEGER = (1 << 2),
+  GPU_FORMAT_FLOAT = (1 << 3),
+
+  GPU_FORMAT_1D = (1 << 10),
+  GPU_FORMAT_2D = (1 << 11),
+  GPU_FORMAT_3D = (1 << 12),
+  GPU_FORMAT_CUBE = (1 << 13),
+  GPU_FORMAT_ARRAY = (1 << 14),
+} eGPUTextureFormatFlag;
+
+typedef struct GPUTexture {
+  int w, h, d;        /* width/height/depth */
+  int orig_w, orig_h; /* width/height (of source data), optional. */
+  int number;         /* number for multitexture binding */
+  int refcount;       /* reference count */
+  uint target;        /* GLenum. GL_TEXTURE_* */
+  uint target_base;   /* GLenum. same as target, (but no multisample)
+                       * use it for unbinding */
+  uint bindcode;      /* GLuint. opengl identifier for texture */
+
+  eGPUTextureFormat format;
+  eGPUTextureFormatFlag format_flag;
+
+  unsigned int bytesize; /* number of byte for one pixel */
+  int components;        /* number of color/alpha channels */
+  int samples; /* number of samples for multisamples textures. 0 if not multisample target */
+
+  int fb_attachment[GPU_TEX_MAX_FBO_ATTACHED];
+  struct GPUFrameBuffer *fb[GPU_TEX_MAX_FBO_ATTACHED];
+} GPUTexture;
+#else
+typedef struct GPUTexture GPUTexture;
+#endif
 
 unsigned int GPU_texture_memory_usage_get(void);
 

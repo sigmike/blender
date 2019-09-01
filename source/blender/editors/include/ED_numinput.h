@@ -21,6 +21,13 @@
 #ifndef __ED_NUMINPUT_H__
 #define __ED_NUMINPUT_H__
 
+#include "../vr/vr_build.h"
+#if WITH_VR
+#  ifdef __cplusplus
+extern "C" {
+#  endif
+#endif
+
 #define NUM_STR_REP_LEN 64
 #define NUM_MAX_ELEMENTS 3
 
@@ -103,5 +110,11 @@ bool user_string_to_number(
     bContext *C, const char *str, const struct UnitSettings *unit, int type, double *r_value);
 
 /** \} */
+
+#if WITH_VR
+#  ifdef __cplusplus
+}
+#  endif
+#endif
 
 #endif /* __ED_NUMINPUT_H__ */

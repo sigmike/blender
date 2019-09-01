@@ -77,6 +77,15 @@
 #  include "BKE_subsurf.h"
 #endif
 
+#include "../vr/vr_build.h"
+#if WITH_VR
+#  include "../vr/vr_main.h"
+#endif
+
+#if WITH_VR
+#  define VR_PANCAKE 0 /* VR without HMD blitting... */
+#endif
+
 /* ******************* paint cursor *************** */
 
 static void wm_paintcursor_draw(bContext *C, ScrArea *sa, ARegion *ar)
@@ -140,6 +149,33 @@ static bool wm_draw_region_stereo_set(Main *bmain, ScrArea *sa, ARegion *ar, eSt
     case SPACE_VIEW3D: {
       if (ar->regiontype == RGN_TYPE_WINDOW) {
         View3D *v3d = sa->spacedata.first;
+#if WITH_VR
+        RegionView3D *rv3d = ar->regiondata;
+        if (rv3d->rflag & RV3D_IS_VR) {
+          if (v3d->camera && v3d->camera->type == OB_CAMERA) {
+            Camera *cam = v3d->camera->data;
+            CameraBGImage *bgpic = cam->bg_images.first;
+            if (bgpic)
+              bgpic->iuser.multiview_eye = sview;
+          }
+          v3d->multiview_eye = sview;
+
+          v3d->stereo3d_flag |= V3D_S3D_DISPVR;
+          /* Hide text overlays. */
+          v3d->overlay.flag |= (V3D_OVERLAY_HIDE_TEXT);
+          /* Hide navigation gizmo. */
+          v3d->gizmo_flag |= V3D_GIZMO_HIDE_NAVIGATE;
+
+          /* Enable scene annotations by default. */
+          static Main *prev_main;
+          if (prev_main != bmain) {
+            v3d->flag2 &= (~V3D_HIDE_OVERLAYS);
+            v3d->flag2 |= V3D_SHOW_ANNOTATION;
+            prev_main = bmain;
+          }
+          return true;
+        }
+#endif
         if (v3d->camera && v3d->camera->type == OB_CAMERA) {
           Camera *cam = v3d->camera->data;
           CameraBGImage *bgpic = cam->bg_images.first;
@@ -295,6 +331,22 @@ static void wm_draw_callbacks(wmWindow *win)
 
 static void wm_draw_region_buffer_free(ARegion *ar)
 {
+#if WITH_VR
+  /* Don't free the VR viewport and offscreen buffers.
+   * It causes memory access errors. The VR viewport
+   * and offscreen buffers will be released when VR
+   * is uninitialized. */
+  RegionView3D *rv3d = ar->regiondata;
+  /* TODO: The "RV3D_IS_VR" test fails if rv3d->rflag
+   * is filled with garbage data when the struct is initialized... */
+  if (rv3d && rv3d->rflag >= RV3D_IS_VR && rv3d->rflag < 64) {
+    if (vr_get_obj()->initialized) {
+      return;
+    }
+    vr_free_viewports(ar);
+    return;
+  }
+#endif
   if (ar->draw_buffer) {
     for (int view = 0; view < 2; view++) {
       if (ar->draw_buffer->offscreen[view]) {
@@ -588,6 +640,38 @@ static void wm_draw_window_offscreen(bContext *C, wmWindow *win, bool stereo)
 
     /* Then do actual drawing of regions. */
     for (ARegion *ar = sa->regionbase.first; ar; ar = ar->next) {
+#if WITH_VR
+      if (win && win == vr_get_obj()->window && wm_region_use_viewport(sa, ar)) {
+        CTX_wm_region_set(C, ar);
+        vr_create_viewports(ar);
+
+        /* Update tracking. */
+        vr_update_tracking();
+
+        /* Perform interactions. */
+        vr_do_interaction();
+
+        /* Draw to VR offscreen buffers. */
+        vr_update_viewport_bounds(&ar->winrct);
+#  if VR_PANCAKE
+        for (int view = 1; view < 2; ++view) {
+#  else
+        for (int view = 0; view < 2; ++view) {
+#  endif
+          wm_draw_region_stereo_set(bmain, sa, ar, view);
+          vr_draw_region_bind(ar, view);
+          ED_region_do_draw(C, ar);
+          vr_draw_region_unbind(ar, view);
+        }
+
+        /* Perform post-render interactions. */
+        vr_do_post_render_interaction();
+
+        ar->do_draw = false;
+        CTX_wm_region_set(C, NULL);
+        continue;
+      }
+#endif
       if (ar->visible && ar->do_draw) {
         CTX_wm_region_set(C, ar);
         bool use_viewport = wm_region_use_viewport(sa, ar);
@@ -671,6 +755,28 @@ static void wm_draw_window_onscreen(bContext *C, wmWindow *win, int view)
   ED_screen_areas_iter(win, screen, sa)
   {
     for (ARegion *ar = sa->regionbase.first; ar; ar = ar->next) {
+#if WITH_VR
+      RegionView3D *rv3d = ar->regiondata;
+      if (win && win == vr_get_obj()->window && rv3d && (rv3d->rflag & RV3D_IS_VR)) {
+#  if !VR_PANCAKE
+        /* Blit the HMD. */
+        vr_blit();
+
+        /* Restore screen viewport coordinates. */
+        wmWindowViewport(win);
+#  endif
+        /* Blit the screen. */
+        if (ar->draw_buffer) {
+          if (ar->draw_buffer->offscreen[1]) {
+            wm_draw_region_blend(ar, 1, false);
+          }
+          else {
+            wm_draw_region_blend(ar, 0, false);
+          }
+        }
+        continue;
+      }
+#endif
       if (ar->visible && ar->overlap == false) {
         if (view == -1 && ar->draw_buffer && ar->draw_buffer->stereo) {
           /* Stereo drawing from textures. */
@@ -919,7 +1025,28 @@ void wm_draw_update(bContext *C)
       continue;
     }
 #endif
+#if WITH_VR
+    /* If VR window, always redraw. */
+    if (win && win == vr_get_obj()->window) {
+      bScreen *screen = WM_window_get_active_screen(win);
 
+      CTX_wm_window_set(C, win);
+
+      /* sets context window+screen */
+      wm_window_make_drawable(wm, win);
+
+      /* notifiers for screen redraw */
+      ED_screen_ensure_updated(wm, win, screen);
+
+      wm_draw_window(C, win);
+      wm_draw_update_clear_window(win);
+
+      wm_window_swap_buffers(win);
+
+      CTX_wm_window_set(C, NULL);
+      continue;
+    }
+#endif
     if (wm_draw_update_test_window(win)) {
       bScreen *screen = WM_window_get_active_screen(win);
 

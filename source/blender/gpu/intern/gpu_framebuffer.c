@@ -38,6 +38,9 @@
 #include "gpu_private.h"
 #include "gpu_context_private.h"
 
+#include "../vr/vr_build.h"
+
+#if !WITH_VR
 typedef enum {
   GPU_FB_DEPTH_ATTACHMENT = 0,
   GPU_FB_DEPTH_STENCIL_ATTACHMENT,
@@ -52,6 +55,7 @@ typedef enum {
    * the maximum number of COLOR attachments specified by glDrawBuffers. */
   GPU_FB_MAX_ATTACHEMENT,
 } GPUAttachmentType;
+#endif
 
 #define GPU_FB_MAX_COLOR_ATTACHMENT (GPU_FB_MAX_ATTACHEMENT - GPU_FB_COLOR_ATTACHMENT0)
 
@@ -60,6 +64,7 @@ typedef enum {
 #define GPU_FB_ATTACHEMENT_IS_DIRTY(flag, type) ((flag & (1 << type)) != 0)
 #define GPU_FB_ATTACHEMENT_SET_DIRTY(flag, type) (flag |= (1 << type))
 
+#if !WITH_VR
 struct GPUFrameBuffer {
   GPUContext *ctx;
   GLuint object;
@@ -71,6 +76,7 @@ struct GPUFrameBuffer {
    * (FBOs are not shared across ogl contexts). */
   // void *ctx;
 };
+#endif
 
 static GLenum convert_attachment_type_to_gl(GPUAttachmentType type)
 {

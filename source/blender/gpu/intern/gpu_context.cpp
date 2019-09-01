@@ -43,6 +43,8 @@
 #include <mutex>
 #include <unordered_set>
 
+#include "../vr/vr_build.h"
+
 #if TRUST_NO_ONE
 #  if 0
 extern "C" {
@@ -156,8 +158,10 @@ void GPU_context_discard(GPUContext *ctx)
   BLI_assert(pthread_equal(pthread_self(), ctx->thread));
   BLI_assert(ctx->orphaned_vertarray_ids.empty());
 #ifdef DEBUG
+#  if !WITH_VR
   /* For now don't allow GPUFrameBuffers to be reuse in another ctx. */
   BLI_assert(ctx->framebuffers.empty());
+#  endif
 #endif
   /* delete remaining vaos */
   while (!ctx->batches.empty()) {

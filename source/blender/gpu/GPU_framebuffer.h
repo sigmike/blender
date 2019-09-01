@@ -24,6 +24,8 @@
 #ifndef __GPU_FRAMEBUFFER_H__
 #define __GPU_FRAMEBUFFER_H__
 
+#include "../vr/vr_build.h"
+
 #ifdef __cplusplus
 extern "C" {
 #endif
@@ -41,7 +43,36 @@ typedef enum eGPUFrameBufferBits {
   GPU_STENCIL_BIT = (1 << 2),
 } eGPUFrameBufferBits;
 
+#if WITH_VR
+typedef enum {
+  GPU_FB_DEPTH_ATTACHMENT = 0,
+  GPU_FB_DEPTH_STENCIL_ATTACHMENT,
+  GPU_FB_COLOR_ATTACHMENT0,
+  GPU_FB_COLOR_ATTACHMENT1,
+  GPU_FB_COLOR_ATTACHMENT2,
+  GPU_FB_COLOR_ATTACHMENT3,
+  GPU_FB_COLOR_ATTACHMENT4,
+  /* Number of maximum output slots.
+   * We support 5 outputs for now (usually we wouldn't need more to preserve fill rate). */
+  /* Keep in mind that GL max is GL_MAX_DRAW_BUFFERS and is at least 8, corresponding to
+   * the maximum number of COLOR attachments specified by glDrawBuffers. */
+  GPU_FB_MAX_ATTACHEMENT
+} GPUAttachmentType;
+
+typedef struct GPUFrameBuffer {
+  struct GPUContext *ctx;
+  uint object; /* GLuint */
+  GPUAttachment attachments[GPU_FB_MAX_ATTACHEMENT];
+  uint16_t dirty_flag;
+  int width, height;
+  bool multisample;
+  /* TODO Check that we always use the right context when binding
+   * (FBOs are not shared accross ogl contexts). */
+  // void *ctx;
+} GPUFrameBuffer;
+#else
 typedef struct GPUFrameBuffer GPUFrameBuffer;
+#endif
 typedef struct GPUOffScreen GPUOffScreen;
 
 /* GPU Framebuffer

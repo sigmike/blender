@@ -21,6 +21,13 @@
 #ifndef __ED_SELECT_UTILS_H__
 #define __ED_SELECT_UTILS_H__
 
+#include "../vr/vr_build.h"
+#if WITH_VR
+#  ifdef __cplusplus
+extern "C" {
+#  endif
+#endif
+
 struct KDTree_1d;
 
 enum {
@@ -63,5 +70,11 @@ bool ED_select_similar_compare_float_tree(const struct KDTree_1d *tree,
                                           const int compare);
 
 eSelectOp ED_select_op_modal(const eSelectOp sel_op, const bool is_first);
+
+#if WITH_VR
+#  ifdef __cplusplus
+}
+#  endif
+#endif
 
 #endif /* __ED_SELECT_UTILS_H__ */

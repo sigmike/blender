@@ -371,4 +371,10 @@ if(WITH_FREESTYLE)
   add_definitions(-DWITH_FREESTYLE)
 endif()
 
+if(WITH_VR)
+  list(APPEND LIB
+    bf_vr
+  )
+endif()
+
 blender_add_lib(bf_draw "${SRC}" "${INC}" "${INC_SYS}" "${LIB}")

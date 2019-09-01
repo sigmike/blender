@@ -93,6 +93,7 @@ set(SRC_DNA_INC
 
 add_subdirectory(datatoc)
 add_subdirectory(editors)
+add_subdirectory(vr)
 add_subdirectory(windowmanager)
 add_subdirectory(blenkernel)
 add_subdirectory(blenlib)

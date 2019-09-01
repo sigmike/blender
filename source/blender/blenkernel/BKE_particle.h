@@ -34,6 +34,13 @@
 
 #include "BKE_customdata.h"
 
+#include "../vr/vr_build.h"
+#if WITH_VR
+#  ifdef __cplusplus
+extern "C" {
+#  endif
+#endif
+
 struct ParticleKey;
 struct ParticleSettings;
 struct ParticleSystem;
@@ -626,5 +633,11 @@ void BKE_particle_batch_cache_free(struct ParticleSystem *psys);
 
 extern void (*BKE_particle_batch_cache_dirty_tag_cb)(struct ParticleSystem *psys, int mode);
 extern void (*BKE_particle_batch_cache_free_cb)(struct ParticleSystem *psys);
+
+#if WITH_VR
+#  ifdef __cplusplus
+}
+#  endif
+#endif
 
 #endif /* __BKE_PARTICLE_H__ */

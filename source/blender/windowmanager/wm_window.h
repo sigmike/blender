@@ -24,6 +24,13 @@
 #ifndef __WM_WINDOW_H__
 #define __WM_WINDOW_H__
 
+#include "../vr/vr_build.h"
+#if WITH_VR
+#  ifdef __cplusplus
+extern "C" {
+#  endif
+#endif
+
 struct EnumPropertyItem;
 struct PointerRNA;
 struct PropertyRNA;
@@ -82,6 +89,7 @@ void wm_quit_with_optional_confirmation_prompt(bContext *C, wmWindow *win) ATTR_
 
 int wm_window_new_exec(bContext *C, struct wmOperator *op);
 int wm_window_new_main_exec(bContext *C, struct wmOperator *op);
+int wm_window_new_vr_exec(bContext *C, struct wmOperator *op);
 
 void wm_test_autorun_warning(bContext *C);
 
@@ -91,5 +99,11 @@ void wm_test_autorun_warning(bContext *C);
 #define WM_WIN_INIT_SIZE_X 1800
 #define WM_WIN_INIT_SIZE_Y 1000
 #define WM_WIN_INIT_PAD 40
+
+#if WITH_VR
+#  ifdef __cplusplus
+}
+#  endif
+#endif
 
 #endif /* __WM_WINDOW_H__ */

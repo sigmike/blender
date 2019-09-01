@@ -31,9 +31,9 @@
 #include "GPU_framebuffer.h"
 #include "GPU_texture.h"
 
-#define GPU_INFO_SIZE 512 /* IMA_MAX_RENDER_TEXT */
+#include "../vr/vr_build.h"
 
-typedef struct GPUViewport GPUViewport;
+#define GPU_INFO_SIZE 512 /* IMA_MAX_RENDER_TEXT */
 
 /* Contains memory pools information */
 typedef struct ViewportMemoryPool {
@@ -88,6 +88,34 @@ typedef struct ViewportEngineData_Info {
   int psl_len;
   int stl_len;
 } ViewportEngineData_Info;
+
+#if WITH_VR
+#  define MAX_ENABLE_ENGINE 8
+typedef struct GPUViewport {
+  int size[2];
+  int samples;
+  int flag;
+
+  /* If engine_handles mismatch we free all ViewportEngineData in this viewport */
+  struct {
+    void *handle;
+    ViewportEngineData *data;
+  } engine_data[MAX_ENABLE_ENGINE];
+
+  struct DefaultFramebufferList *fbl;
+  struct DefaultTextureList *txl;
+
+  ViewportMemoryPool vmempool;           /* Used for rendering data structure. */
+  struct DRWInstanceDataList *idatalist; /* Used for rendering data structure. */
+
+  ListBase tex_pool; /* ViewportTempTexture list : Temporary textures shared across draw engines */
+
+  /* Profiling data */
+  double cache_time;
+} GPUViewport;
+#else
+typedef struct GPUViewport GPUViewport;
+#endif
 
 GPUViewport *GPU_viewport_create(void);
 void GPU_viewport_bind(GPUViewport *viewport, const rcti *rect);

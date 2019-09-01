@@ -99,6 +99,10 @@
 #  include "GPU_select.h"
 #endif
 
+#if WITH_VR
+#  include "../vr/vr_main.h"
+#endif
+
 /** Render State: No persistent data between draw calls. */
 DRWManager DST = {NULL};
 
@@ -1659,11 +1663,7 @@ void DRW_draw_render_loop_ex(struct Depsgraph *depsgraph,
     ED_region_draw_cb_draw(DST.draw_ctx.evil_C, DST.draw_ctx.ar, REGION_DRAW_PRE_VIEW);
   }
 
-  drw_engines_draw_scene();
-
-  /* Fix 3D view being "laggy" on macos and win+nvidia. (See T56996, T61474) */
-  GPU_flush();
-
+#if WITH_VR
   /* annotations - temporary drawing buffer (3d space) */
   /* XXX: Or should we use a proper draw/overlay engine for this case? */
   if (do_annotations) {
@@ -1672,6 +1672,28 @@ void DRW_draw_render_loop_ex(struct Depsgraph *depsgraph,
     ED_annotation_draw_view3d(DEG_get_input_scene(depsgraph), depsgraph, v3d, ar, true);
     GPU_depth_test(true);
   }
+
+  /* Render VR controllers and menus. */
+  if (rv3d->rflag & RV3D_IS_VR) {
+    vr_post_scene_render(v3d->multiview_eye);
+  }
+#endif
+
+  drw_engines_draw_scene();
+
+  /* Fix 3D view being "laggy" on macos and win+nvidia. (See T56996, T61474) */
+  GPU_flush();
+
+#if !WITH_VR
+  /* annotations - temporary drawing buffer (3d space) */
+  /* XXX: Or should we use a proper draw/overlay engine for this case? */
+  if (do_annotations) {
+    GPU_depth_test(false);
+    /* XXX: as scene->gpd is not copied for COW yet */
+    ED_annotation_draw_view3d(DEG_get_input_scene(depsgraph), depsgraph, v3d, ar, true);
+    GPU_depth_test(true);
+  }
+#endif
 
   DRW_draw_callbacks_post_scene();
   DRW_state_reset();

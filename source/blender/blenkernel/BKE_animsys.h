@@ -20,6 +20,13 @@
 #ifndef __BKE_ANIMSYS_H__
 #define __BKE_ANIMSYS_H__
 
+#include "../vr/vr_build.h"
+#if WITH_VR
+#  ifdef __cplusplus
+extern "C" {
+#  endif
+#endif
+
 /** \file
  * \ingroup bke
  */
@@ -295,5 +302,11 @@ void BKE_animsys_eval_driver(struct Depsgraph *depsgraph,
 void BKE_animsys_update_driver_array(struct ID *id);
 
 /* ************************************* */
+
+#if WITH_VR
+#  ifdef __cplusplus
+}
+#  endif
+#endif
 
 #endif /* __BKE_ANIMSYS_H__*/

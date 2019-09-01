@@ -34,6 +34,13 @@
 
 #include "DEG_depsgraph.h"
 
+#include "../vr/vr_build.h"
+#if WITH_VR
+#  ifdef __cplusplus
+extern "C" {
+#  endif
+#endif
+
 /* ************************** Types ***************************** */
 
 struct ARegion;
@@ -1155,5 +1162,11 @@ bool checkUseAxisMatrix(TransInfo *t);
                           *tc_end = t->data_container + t->data_container_len; \
        th != tc_end; \
        th++, i++)
+
+#if WITH_VR
+#  ifdef __cplusplus
+}
+#  endif
+#endif
 
 #endif

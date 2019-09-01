@@ -32,6 +32,13 @@
 #include "GPU_shader_interface.h"
 #include "GPU_shader.h"
 
+#include "../vr/vr_build.h"
+#if WITH_VR
+#  ifdef __cplusplus
+extern "C" {
+#  endif
+#endif
+
 typedef enum {
   GPU_BATCH_UNUSED,
   GPU_BATCH_READY_TO_FORMAT,
@@ -222,5 +229,11 @@ void gpu_batch_exit(void);
       MEM_freeN(_batch_array); \
     } \
   } while (0)
+
+#if WITH_VR
+#  ifdef __cplusplus
+}
+#  endif
+#endif
 
 #endif /* __GPU_BATCH_H__ */

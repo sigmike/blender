@@ -24,6 +24,13 @@
 #ifndef __ED_VIEW3D_H__
 #define __ED_VIEW3D_H__
 
+#include "../vr/vr_build.h"
+#if WITH_VR
+#  ifdef __cplusplus
+extern "C" {
+#  endif
+#endif
+
 /* ********* exports for space_view3d/ module ********** */
 struct ARegion;
 struct BMEdge;
@@ -70,7 +77,9 @@ struct wmOperatorType;
 struct wmWindow;
 struct wmWindowManager;
 
+#if !WITH_VR
 enum eGPUFXFlags;
+#endif
 
 /* for derivedmesh drawing callbacks, for view3d_select, .... */
 typedef struct ViewContext {
@@ -745,5 +754,11 @@ void ED_view3d_gizmo_mesh_preselect_get_active(struct bContext *C,
 void ED_view3d_buttons_region_layout_ex(const struct bContext *C,
                                         struct ARegion *ar,
                                         const char *category_override);
+
+#if WITH_VR
+#  ifdef __cplusplus
+}
+#  endif
+#endif
 
 #endif /* __ED_VIEW3D_H__ */

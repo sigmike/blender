@@ -20,6 +20,13 @@
 #ifndef __BKE_GPENCIL_H__
 #define __BKE_GPENCIL_H__
 
+#include "../vr/vr_build.h"
+#if WITH_VR
+#  ifdef __cplusplus
+extern "C" {
+#  endif
+#endif
+
 /** \file
  * \ingroup bke
  */
@@ -223,5 +230,11 @@ float BKE_gpencil_multiframe_falloff_calc(
 
 extern void (*BKE_gpencil_batch_cache_dirty_tag_cb)(struct bGPdata *gpd);
 extern void (*BKE_gpencil_batch_cache_free_cb)(struct bGPdata *gpd);
+
+#if WITH_VR
+#  ifdef __cplusplus
+}
+#  endif
+#endif
 
 #endif /*  __BKE_GPENCIL_H__ */

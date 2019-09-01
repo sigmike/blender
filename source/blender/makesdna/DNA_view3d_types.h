@@ -45,6 +45,8 @@ struct wmTimer;
 #include "DNA_movieclip_types.h"
 #include "DNA_gpu_types.h"
 
+#include "../vr/vr_build.h"
+
 typedef struct RegionView3D {
 
   /** GL_PROJECTION matrix. */
@@ -330,6 +332,9 @@ typedef struct View3D {
 #define V3D_S3D_DISPCAMERAS (1 << 0)
 #define V3D_S3D_DISPPLANE (1 << 1)
 #define V3D_S3D_DISPVOLUME (1 << 2)
+#if WITH_VR
+#  define V3D_S3D_DISPVR (1 << 3)
+#endif
 
 /** #View3D.flag */
 #define V3D_FLAG_UNUSED_0 (1 << 0) /* cleared */
@@ -352,6 +357,9 @@ typedef struct View3D {
 #define RV3D_CLIPPING (1 << 2)
 #define RV3D_NAVIGATING (1 << 3)
 #define RV3D_GPULIGHT_UPDATE (1 << 4)
+#if WITH_VR
+#  define RV3D_IS_VR (1 << 5)
+#endif
 /*#define RV3D_IS_GAME_ENGINE       (1 << 5) */ /* UNUSED */
 /**
  * Disable zbuffer offset, skip calls to #ED_view3d_polygon_offset.

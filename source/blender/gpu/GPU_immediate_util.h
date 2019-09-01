@@ -23,6 +23,13 @@
 #ifndef __GPU_IMMEDIATE_UTIL_H__
 #define __GPU_IMMEDIATE_UTIL_H__
 
+#include "../vr/vr_build.h"
+#if WITH_VR
+#  ifdef __cplusplus
+extern "C" {
+#  endif
+#endif
+
 /* Draw 2D rectangles (replaces glRect functions) */
 /* caller is responsible for vertex format & shader */
 void immRectf(uint pos, float x1, float y1, float x2, float y2);
@@ -76,5 +83,11 @@ void imm_draw_cylinder_wire_3d(
     uint pos, float base, float top, float height, int slices, int stacks);
 void imm_draw_cylinder_fill_3d(
     uint pos, float base, float top, float height, int slices, int stacks);
+
+#if WITH_VR
+#  ifdef __cplusplus
+}
+#  endif
+#endif
 
 #endif /* __GPU_IMMEDIATE_UTIL_H__ */

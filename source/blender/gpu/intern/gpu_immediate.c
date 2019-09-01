@@ -37,6 +37,12 @@
 #include <string.h>
 #include <stdlib.h>
 
+#include "../vr/vr_build.h"
+#if WITH_VR
+#  undef TRUST_NO_ONE
+#  define TRUST_NO_ONE 0
+#endif
+
 /* necessary functions from matrix API */
 extern void GPU_matrix_bind(const GPUShaderInterface *);
 extern bool GPU_matrix_dirty_get(void);

@@ -42,6 +42,8 @@
 
 #include "gpu_context_private.h"
 
+#include "../vr/vr_build.h"
+
 static struct GPUTextureGlobal {
   /** Texture used in place of invalid textures (not loaded correctly, missing). */
   GPUTexture *invalid_tex_1D;
@@ -49,10 +51,11 @@ static struct GPUTextureGlobal {
   GPUTexture *invalid_tex_3D;
 } GG = {NULL, NULL, NULL};
 
+#if !WITH_VR
 /* Maximum number of FBOs a texture can be attached to. */
-#define GPU_TEX_MAX_FBO_ATTACHED 10
+#  define GPU_TEX_MAX_FBO_ATTACHED 10
 
-typedef enum eGPUTextureFormatFlag {
+typedef enum GPUTextureFormatFlag {
   GPU_FORMAT_DEPTH = (1 << 0),
   GPU_FORMAT_STENCIL = (1 << 1),
   GPU_FORMAT_INTEGER = (1 << 2),
@@ -63,7 +66,7 @@ typedef enum eGPUTextureFormatFlag {
   GPU_FORMAT_3D = (1 << 12),
   GPU_FORMAT_CUBE = (1 << 13),
   GPU_FORMAT_ARRAY = (1 << 14),
-} eGPUTextureFormatFlag;
+} GPUTextureFormatFlag;
 
 /* GPUTexture */
 struct GPUTexture {
@@ -86,6 +89,7 @@ struct GPUTexture {
   int fb_attachment[GPU_TEX_MAX_FBO_ATTACHED];
   GPUFrameBuffer *fb[GPU_TEX_MAX_FBO_ATTACHED];
 };
+#endif
 
 /* ------ Memory Management ------- */
 /* Records every texture allocation / free

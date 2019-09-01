@@ -24,6 +24,13 @@
 #ifndef __ED_SPACE_API_H__
 #define __ED_SPACE_API_H__
 
+#include "../vr/vr_build.h"
+#if WITH_VR
+#  ifdef __cplusplus
+extern "C" {
+#  endif
+#endif
+
 struct ARegionType;
 struct bContext;
 
@@ -73,5 +80,11 @@ void ED_region_draw_cb_exit(struct ARegionType *, void *);
 /* generic callbacks */
 /* ed_util.c */
 void ED_region_draw_mouse_line_cb(const struct bContext *C, struct ARegion *ar, void *arg_info);
+
+#if WITH_VR
+#  ifdef __cplusplus
+}
+#  endif
+#endif
 
 #endif /* __ED_SPACE_API_H__ */

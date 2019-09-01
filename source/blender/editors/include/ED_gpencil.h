@@ -24,6 +24,13 @@
 #ifndef __ED_GPENCIL_H__
 #define __ED_GPENCIL_H__
 
+#include "../vr/vr_build.h"
+#if WITH_VR
+#  ifdef __cplusplus
+extern "C" {
+#  endif
+#endif
+
 struct ID;
 struct ListBase;
 struct PointerRNA;
@@ -286,5 +293,11 @@ int ED_gpencil_select_stroke_segment(struct bGPDlayer *gpl,
                                      float r_hitb[3]);
 
 void ED_gpencil_select_toggle_all(struct bContext *C, int action);
+
+#if WITH_VR
+#  ifdef __cplusplus
+}
+#  endif
+#endif
 
 #endif /*  __ED_GPENCIL_H__ */

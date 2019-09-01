@@ -45,10 +45,14 @@
 
 #include "MEM_guardedalloc.h"
 
+#include "../vr/vr_build.h"
+
 static const int default_fbl_len = (sizeof(DefaultFramebufferList)) / sizeof(void *);
 static const int default_txl_len = (sizeof(DefaultTextureList)) / sizeof(void *);
 
-#define MAX_ENABLE_ENGINE 8
+#if !WITH_VR
+#  define MAX_ENABLE_ENGINE 8
+#endif
 
 /* Maximum number of simultaneous engine enabled at the same time.
  * Setting it lower than the real number will do lead to
@@ -61,6 +65,7 @@ typedef struct ViewportTempTexture {
   GPUTexture *texture;
 } ViewportTempTexture;
 
+#if !WITH_VR
 struct GPUViewport {
   int size[2];
   int samples;
@@ -83,6 +88,7 @@ struct GPUViewport {
   /* Profiling data */
   double cache_time;
 };
+#endif
 
 enum {
   DO_UPDATE = (1 << 0),

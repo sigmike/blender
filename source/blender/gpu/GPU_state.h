@@ -21,6 +21,13 @@
 #ifndef __GPU_STATE_H__
 #define __GPU_STATE_H__
 
+#include "../vr/vr_build.h"
+#if WITH_VR
+#  ifdef __cplusplus
+extern "C" {
+#  endif
+#endif
+
 /* These map directly to the GL_ blend functions, to minimize API add as needed*/
 typedef enum eGPUBlendFunction {
   GPU_ONE,
@@ -60,5 +67,11 @@ void GPU_flush(void);
 void GPU_finish(void);
 
 void GPU_logic_op_invert_set(bool enable);
+
+#if WITH_VR
+#  ifdef __cplusplus
+}
+#  endif
+#endif
 
 #endif /* __GPU_STATE_H__ */

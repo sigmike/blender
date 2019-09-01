@@ -20,6 +20,13 @@
 #ifndef __BKE_TRACKING_H__
 #define __BKE_TRACKING_H__
 
+#include "../vr/vr_build.h"
+#if WITH_VR
+#  ifdef __cplusplus
+extern "C" {
+#  endif
+#endif
+
 /** \file
  * \ingroup bke
  */
@@ -472,5 +479,11 @@ void BKE_tracking_get_rna_path_prefix_for_plane_track(
 #define TRACK_AREA_SEARCH 4
 
 #define TRACK_AREA_ALL (TRACK_AREA_POINT | TRACK_AREA_PAT | TRACK_AREA_SEARCH)
+
+#if WITH_VR
+#  ifdef __cplusplus
+}
+#  endif
+#endif
 
 #endif

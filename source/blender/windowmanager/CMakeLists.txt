@@ -174,4 +174,10 @@ if(WITH_COMPOSITOR)
   add_definitions(-DWITH_COMPOSITOR)
 endif()
 
+if(WITH_VR)
+  list(APPEND LIB
+    bf_vr
+  )
+endif()
+
 blender_add_lib_nolist(bf_windowmanager "${SRC}" "${INC}" "${INC_SYS}" "${LIB}")

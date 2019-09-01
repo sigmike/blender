@@ -30,6 +30,13 @@
 #include "BLI_compiler_compat.h"
 #include "BLI_assert.h"
 
+#include "../vr/vr_build.h"
+#if WITH_VR
+#  ifdef __cplusplus
+extern "C" {
+#  endif
+#endif
+
 #define GPU_VERT_ATTR_MAX_LEN 16
 #define GPU_VERT_ATTR_MAX_NAMES 5
 #define GPU_VERT_ATTR_NAME_AVERAGE_LEN 11
@@ -124,5 +131,11 @@ typedef struct GPUPackedNormal {
 
 GPUPackedNormal GPU_normal_convert_i10_v3(const float data[3]);
 GPUPackedNormal GPU_normal_convert_i10_s3(const short data[3]);
+
+#if WITH_VR
+#  ifdef __cplusplus
+}
+#  endif
+#endif
 
 #endif /* __GPU_VERTEX_FORMAT_H__ */

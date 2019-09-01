@@ -17,6 +17,13 @@
 #ifndef __BKE_SPEAKER_H__
 #define __BKE_SPEAKER_H__
 
+#include "../vr/vr_build.h"
+#if WITH_VR
+#  ifdef __cplusplus
+extern "C" {
+#  endif
+#endif
+
 /** \file
  * \ingroup bke
  * \brief General operations for speakers.
@@ -34,5 +41,11 @@ void BKE_speaker_copy_data(struct Main *bmain,
 struct Speaker *BKE_speaker_copy(struct Main *bmain, const struct Speaker *spk);
 void BKE_speaker_make_local(struct Main *bmain, struct Speaker *spk, const bool lib_local);
 void BKE_speaker_free(struct Speaker *spk);
+
+#if WITH_VR
+#  ifdef __cplusplus
+}
+#  endif
+#endif
 
 #endif
