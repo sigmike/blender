@@ -1654,6 +1654,16 @@ void DRW_draw_render_loop_ex(struct Depsgraph *depsgraph,
 
   DRW_hair_update();
 
+#if WITH_VR
+  if (rv3d->rflag & RV3D_IS_VR) {
+    /* Update VR matrices and pre-render. */
+    eStereoViews side = v3d->multiview_eye;
+    vr_update_view_matrix(side, rv3d->viewinv);
+    vr_update_projection_matrix(side, rv3d->winmat);
+    vr_pre_scene_render(side);
+  }
+#endif
+
   drw_engines_draw_background();
 
   GPU_framebuffer_bind(DST.default_framebuffer);
